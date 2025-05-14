@@ -3,10 +3,10 @@ import { ITask, TPriority, TStatus } from "../types/types";
 
 export type CreateUpdateTask = {
   assigneeId: number;
-  boardId?: number;
+  boardId: number;
   description: string;
   priority: TPriority;
-  status?: TStatus;
+  status: TStatus;
   title: string;
 };
 

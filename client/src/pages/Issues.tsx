@@ -116,7 +116,7 @@ export default function Issues() {
         }}
         dataSource={filteredDataSource}
         pagination={false}
-        scroll={{ x: "min-content", y: 840 }}
+        scroll={{ x: "min-content" }}
         size="small"
         bordered
         onRow={(task) => {

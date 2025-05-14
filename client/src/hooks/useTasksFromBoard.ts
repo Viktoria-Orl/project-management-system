@@ -8,7 +8,7 @@ import { useGetTasksFromBoardQuery } from "../state/boards.rtk";
 
 export function useTasksFromBoard(boardId?: string) {
   const dispatch = useAppDispatch();
-  // 1) Получаем данные с сервера с помозью апи досок
+  // 1) Получаем данные с сервера с помощью апи досок
   const { data: tasksByBoardFromServer } = useGetTasksFromBoardQuery(
     boardId as string, // так как есть skip, то используем type assertion, исключаем undefined
     { skip: !boardId }, // свойство запроса - пропустить если нет boardId

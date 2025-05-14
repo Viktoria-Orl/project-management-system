@@ -7,7 +7,7 @@ export interface ITask {
   description: string;
   priority: TPriority;
   status: TStatus;
-  boardId?: number;
+  boardId: number;
   boardName: string;
   assignee: {
     id: number;

@@ -21,7 +21,12 @@ export default function BoardDetailsPage() {
   if (!board) return <p>Доска не найдена</p>;
 
   const handleEdit = (task: ITask) => {
-    dispatch(setOpen({ task })); // для редактирования задачи передаем task
+    const taskWithBoardName = {
+      ...task,
+      boardName: board.name, // добавляем boardName для заполнения поля "Проект"
+      //т.к. задача из issuesSlice/projectTasks приходит без имени доски
+    };
+    dispatch(setOpen({ task: taskWithBoardName })); // для редактирования задачи передаем task
   };
 
   return (

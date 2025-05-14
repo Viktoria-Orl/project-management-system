@@ -14,8 +14,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   CreateUpdateTask,
   useCreateNewTaskMutation,
+  useUpdateTaskMutation,
 } from "../state/issues.rtk";
-import { addIssue } from "../state/issuesSlice";
+import { addIssue, editIssue } from "../state/issuesSlice";
 
 function getOptions(array: string[]) {
   return array.map((item) => ({
@@ -28,10 +29,9 @@ export default function TaskModal() {
   const dispatch = useAppDispatch();
   const open = useAppSelector(selectModalOpen);
   const task = useAppSelector(selectModalTask);
-  const isEdit = !!task;
+  const isEdit = Boolean(task);
   const boardId = useAppSelector(selectModalBoardId);
   const isFromBoard = !!boardId;
-  console.log(boardId);
 
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
@@ -57,7 +57,7 @@ export default function TaskModal() {
   const isFromIssuesPage = location.pathname === "/issues";
 
   const handleNavigateToBoard = () => {
-    if (isEdit) {
+    if (isEdit && task) {
       const boardForNavigate = boards.find((b) => b.name === task.boardName);
       navigate(`/board/${boardForNavigate?.id}`);
       dispatch(setClose());
@@ -65,7 +65,7 @@ export default function TaskModal() {
   };
 
   useEffect(() => {
-    if (isEdit) {
+    if (isEdit && task) {
       form.setFieldsValue({
         title: task.title,
         description: task.description,
@@ -83,28 +83,8 @@ export default function TaskModal() {
     }
   }, [isEdit, task, form, isFromBoard, currentBoardName]);
 
-  /*   
-  // внутри компонента модального окна
-  const handleCreate = () => {
-    const newTask = {
-      assigneeId: 0,
-      boardId: 0,
-      description: "string",
-      priority: "Medium",
-      status: "Done",
-      title: "string",
-    };
-
-    // 4) Отправляем новую задачу на сервер, чтобы она появилась в БД
-    createNewTask(newTask)
-      .unwrap() // функция которая возвращает промис
-      // 5) Добавляем задачу в Redux Store, чтобы она появилась в нашем списке
-      .then((response) => dispatch(addIssue({ ...newTask, id: response.id })))
-      .catch((error) => console.log(error));
-  };
-  // */
-
   const [createNewTask] = useCreateNewTaskMutation();
+  const [updateTask] = useUpdateTaskMutation();
 
   //отправка или редактирование задачи
   const handleOk = () => {
@@ -133,28 +113,45 @@ export default function TaskModal() {
         title: values.title,
         description: values.description,
         priority: values.priority,
+        status: values.status,
         boardId: board.id,
         assigneeId: assignee.id,
       };
 
-      // TODO: отправка данных (edit / create)
       console.log("Submit:", dataToSubmit);
 
-      createNewTask(dataToSubmit)
-        .unwrap() // функция которая возвращает промис
+      if (isEdit && task) {
         // 5) Добавляем задачу в Redux Store, чтобы она появилась в нашем списке
-        .then((response) =>
-          dispatch(
-            addIssue({
-              ...dataToSubmit,
-              id: response.id,
-              status: "InProgress",
-              boardName: board.name,
-              assignee: assignee,
-            }),
-          ),
-        )
-        .catch((error) => console.log("Ошибка создания задачи:", error));
+        updateTask({ taskId: task.id, data: dataToSubmit })
+          .unwrap() // функция которая возвращает промис
+          // 5) Добавляем задачу в Redux Store, чтобы она появилась в нашем списке
+          .then(() => {
+            dispatch(
+              editIssue({
+                ...dataToSubmit,
+                id: task.id,
+                boardName: board.name,
+                assignee: assignee,
+              }),
+            );
+          })
+          .catch((error) => console.error("Ошибка обновления задачи:", error));
+      } else {
+        createNewTask(dataToSubmit)
+          .unwrap()
+          .then((response) =>
+            dispatch(
+              addIssue({
+                ...dataToSubmit,
+                id: response.id,
+                status: "Backlog",
+                boardName: board.name,
+                assignee: assignee,
+              }),
+            ),
+          )
+          .catch((error) => console.log("Ошибка создания задачи:", error));
+      }
 
       setTimeout(() => {
         setConfirmLoading(false);
