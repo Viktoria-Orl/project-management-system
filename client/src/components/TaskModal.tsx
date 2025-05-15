@@ -17,6 +17,7 @@ import {
   useUpdateTaskMutation,
 } from "../state/issues.rtk";
 import { addIssue, editIssue } from "../state/issuesSlice";
+import { taskModalDraftStorage } from "../utils/draftStorage";
 
 function getOptions(array: string[]) {
   return array.map((item) => ({
@@ -79,9 +80,15 @@ export default function TaskModal() {
         board: currentBoardName,
       });
     } else {
-      form.resetFields();
+      const draft = taskModalDraftStorage.load();
+      if (draft && open) {
+        console.log("Loaded draft:", draft);
+        form.setFieldsValue(draft);
+      } else {
+        form.resetFields();
+      }
     }
-  }, [isEdit, task, form, isFromBoard, currentBoardName]);
+  }, [open, isEdit, task, form, isFromBoard, currentBoardName]);
 
   const [createNewTask] = useCreateNewTaskMutation();
   const [updateTask] = useUpdateTaskMutation();
@@ -154,6 +161,7 @@ export default function TaskModal() {
       }
 
       setTimeout(() => {
+        taskModalDraftStorage.clear();
         setConfirmLoading(false);
         dispatch(setClose());
       }, 1000);
@@ -163,6 +171,15 @@ export default function TaskModal() {
   const handleCancel = () => {
     dispatch(setClose());
   };
+
+  function handleValuesChange(
+    _: Partial<CreateUpdateTask>, // "заглушка" для changedValues - первого аргумента колбэка onValuesChange
+    values: Partial<CreateUpdateTask>,
+  ) {
+    if (!isEdit) {
+      taskModalDraftStorage.save(values);
+    }
+  }
 
   return (
     <Modal
@@ -190,7 +207,7 @@ export default function TaskModal() {
         </Button>,
       ]}
     >
-      <Form layout="vertical" form={form}>
+      <Form layout="vertical" form={form} onValuesChange={handleValuesChange}>
         <Form.Item label="Название" name="title">
           <Input />
         </Form.Item>
