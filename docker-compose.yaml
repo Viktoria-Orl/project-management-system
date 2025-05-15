@@ -1,0 +1,43 @@
+# A docker-compose must always start by the version tag.
+#version: "1.0"
+
+# You should know that docker-composes works with services.
+# 1 service = 1 container.
+# For example, a service maybe, a server, a client, a database...
+# We use the keyword 'services' to start to create services.
+services:
+  client:
+    build:
+      context: ./client
+      # dockerfile: dev.Dockerfile - если бы было другое название файла
+    image: client
+    container_name: client
+    # зависимость запуска - только после сервера
+    depends_on:
+      - server
+    # переменные окружения для приложения
+    # environment:
+    #   - NODE_ENV=development - переменная для определения режима работы приложения
+    ports:
+      - "5173:5173"
+    # expose:
+    #   - 5173
+
+  server:
+    build:
+      context: ./server
+      # dockerfile: dev.Dockerfile - если бы было другое название файла
+    image: server
+    container_name: server
+    ports:
+      - "8080:8080"
+    # expose:
+    #   - 8080
+
+# Once the docker-compose is set up, your client/server application need to be built.
+# This step corresponds to the ‘docker build’ command but applied to the different services.
+#1 - docker-compose build команда для самого первого запуска и создания контейнеров
+
+# Your docker-compose is built! Now it’s time to start! 
+# This step corresponds to the ‘docker run’ command but applied to the different services.
+#2 - docker-compose up - запуск всех созданных контейнеров сразу
