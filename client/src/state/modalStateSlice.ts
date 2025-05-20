@@ -8,7 +8,7 @@ interface IModalState {
   task?: ITask;
 }
 
-// в нач состоянии - состояние окна модального окна - закрыто или открыто
+// в нач состоянии - состояние окна модального окна - закрыто
 const initialState: IModalState = {
   open: false,
 };

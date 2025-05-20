@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Modal, Form, Input, Select, Button } from "antd";
 import { useAppSelector, useAppDispatch } from "../state/hooks";
 import {
@@ -18,13 +18,8 @@ import {
 } from "../state/issues.rtk";
 import { addIssue, editIssue } from "../state/issuesSlice";
 import { taskModalDraftStorage } from "../utils/draftStorage";
-
-function getOptions(array: string[]) {
-  return array.map((item) => ({
-    value: item,
-    label: item,
-  }));
-}
+import getOptions from "../utils/getOptions";
+import useInitializeForm from "../hooks/useInitializeForm";
 
 export default function TaskModal() {
   const dispatch = useAppDispatch();
@@ -32,22 +27,13 @@ export default function TaskModal() {
   const task = useAppSelector(selectModalTask);
   const isEdit = Boolean(task);
   const boardId = useAppSelector(selectModalBoardId);
-  const isFromBoard = !!boardId;
+  const isFromBoard = Boolean(boardId);
 
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [form] = Form.useForm();
 
   const users = useUsers();
-  const userOptions = users.map((user) => ({
-    value: user.fullName,
-    label: user.fullName,
-  }));
-
   const boards = useBoards();
-  const boardOptions = boards.map((board) => ({
-    value: board.name,
-    label: board.name,
-  }));
 
   const currentBoardName = isFromBoard
     ? boards.find((b) => b.id === boardId)?.name
@@ -57,43 +43,20 @@ export default function TaskModal() {
   const location = useLocation();
   const isFromIssuesPage = location.pathname === "/issues";
 
-  const handleNavigateToBoard = () => {
-    if (isEdit && task) {
-      const boardForNavigate = boards.find((b) => b.name === task.boardName);
-      navigate(`/board/${boardForNavigate?.id}`);
-      dispatch(setClose());
-    }
-  };
-
-  useEffect(() => {
-    if (isEdit && task) {
-      form.setFieldsValue({
-        title: task.title,
-        description: task.description,
-        board: task.boardName,
-        priority: task.priority,
-        status: task.status,
-        assignee: task.assignee.fullName,
-      });
-    } else if (isFromBoard) {
-      form.setFieldsValue({
-        board: currentBoardName,
-      });
-    } else {
-      const draft = taskModalDraftStorage.load();
-      if (draft && open) {
-        console.log("Loaded draft:", draft);
-        form.setFieldsValue(draft);
-      } else {
-        form.resetFields();
-      }
-    }
-  }, [open, isEdit, task, form, isFromBoard, currentBoardName]);
-
   const [createNewTask] = useCreateNewTaskMutation();
   const [updateTask] = useUpdateTaskMutation();
 
-  //отправка или редактирование задачи
+  //хук для заполнения полей формы
+  useInitializeForm({
+    open,
+    isEdit,
+    task,
+    form,
+    isFromBoard,
+    currentBoardName,
+  });
+
+  //клик по кнопке ок при отправке или редактировании задачи
   const handleOk = () => {
     form.validateFields().then((values) => {
       setConfirmLoading(true); // Включаем индикатор загрузки
@@ -168,8 +131,18 @@ export default function TaskModal() {
     });
   };
 
+  //клик по кнопке отмены или области вне модального окна
   const handleCancel = () => {
     dispatch(setClose());
+  };
+
+  //клин по кнопке "перейти на доску"
+  const handleNavigateToBoard = () => {
+    if (isEdit && task) {
+      const boardForNavigate = boards.find((b) => b.name === task.boardName);
+      navigate(`/board/${boardForNavigate?.id}`);
+      dispatch(setClose());
+    }
   };
 
   function handleValuesChange(
@@ -215,7 +188,10 @@ export default function TaskModal() {
           <Input.TextArea />
         </Form.Item>
         <Form.Item label="Проект" name="board">
-          <Select disabled={!!boardId} options={boardOptions} />
+          <Select
+            disabled={!!boardId}
+            options={getOptions(boards.map((board) => board.name))}
+          />
         </Form.Item>
         <Form.Item label="Приоритет" name="priority">
           <Select options={getOptions(priorities)}></Select>
@@ -224,7 +200,9 @@ export default function TaskModal() {
           <Select options={getOptions(statuses)}></Select>
         </Form.Item>
         <Form.Item label="Исполнитель" name="assignee">
-          <Select options={userOptions}></Select>
+          <Select
+            options={getOptions(users.map((user) => user.fullName))}
+          ></Select>
         </Form.Item>
       </Form>
     </Modal>
