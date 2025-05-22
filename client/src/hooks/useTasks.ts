@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../state/hooks";
 import { useGetTasksQuery } from "../state/issues.rtk";
 import { setIssuesFromServer, selectIssues } from "../state/issuesSlice";
 
-export function useTasks() {
+export default function useTasks() {
   const dispatch = useAppDispatch();
   // 1) Получаем данные с сервера
   const { data: tasksFromServer } = useGetTasksQuery();

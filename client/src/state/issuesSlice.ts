@@ -54,8 +54,8 @@ export const {
 
 // Селектор: получает список задач из состояния
 export const selectIssues = (state: RootState) => state.issues.allTasks;
-export const selectIssueById = (state: RootState, id: number) =>
-  state.issues.allTasks.find((task) => task.id === id);
+export const selectIssueById = (state: RootState, taskId: number) =>
+  state.issues.allTasks.find((task) => task.id === taskId);
 export const selectIssuesByBoard = (state: RootState, boardId?: string) =>
   boardId ? state.issues.projectTasks[boardId] : [];
 

@@ -4,7 +4,7 @@ import { ITask } from "../types/types";
 
 interface ITaskCardProps {
   task: ITask;
-  onEdit: (task: ITask) => void;
+  onEdit: (taskId: number) => void;
 }
 
 export default function TaskCard({ task, onEdit }: ITaskCardProps) {
@@ -18,7 +18,7 @@ export default function TaskCard({ task, onEdit }: ITaskCardProps) {
           key="edit"
           onClick={() => {
             // функция-обёртка, которую React вызовет при клике
-            onEdit(task);
+            onEdit(task.id);
           }}
           style={{ cursor: "pointer" }}
         />

@@ -6,7 +6,7 @@ import {
 } from "../state/issuesSlice";
 import { useGetTasksFromBoardQuery } from "../state/boards.rtk";
 
-export function useTasksFromBoard(boardId?: string) {
+export default function useTasksFromBoard(boardId?: string) {
   const dispatch = useAppDispatch();
   // 1) Получаем данные с сервера с помощью апи досок
   const { data: tasksByBoardFromServer } = useGetTasksFromBoardQuery(

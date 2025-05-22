@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../state/hooks";
 import { useGetBoardsQuery } from "../state/boards.rtk";
 import { setBoardsFromServer, selectBoards } from "../state/boardsSlice";
 
-export function useBoards() {
+export default function useBoards() {
   const dispatch = useAppDispatch();
   const { data: boardsFromServer } = useGetBoardsQuery();
 

@@ -30,7 +30,7 @@ const issuesApi = api.injectEndpoints({
       query: () => "tasks",
     }),
     //GET-запрос на /tasks/{taskId} для получения одной задачи по ID.
-    getTaskById: build.query<{ data: ITask }, { taskId: number }>({
+    getTaskById: build.query<{ data: ITask }, number>({
       query: (taskId) => `tasks/${taskId}`,
     }),
     //POST-запрос на /tasks/create, чтобы создать новую задачу

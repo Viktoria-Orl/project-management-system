@@ -1,6 +1,6 @@
 import { Card } from "antd";
 import { useNavigate } from "react-router-dom";
-import { useBoards } from "../hooks/useBoards";
+import useBoards from "../hooks/useBoards";
 
 export default function Boards() {
   const navigate = useNavigate();

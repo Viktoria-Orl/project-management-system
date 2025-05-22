@@ -3,12 +3,14 @@ import { Modal, Form, Input, Select, Button } from "antd";
 import { useAppSelector, useAppDispatch } from "../state/hooks";
 import {
   selectModalOpen,
-  selectModalTask,
+  selectModalTaskId,
   selectModalBoardId,
   setClose,
 } from "../state/modalStateSlice";
-import { useBoards } from "../hooks/useBoards";
-import { useUsers } from "../hooks/useUsers";
+import useBoards from "../hooks/useBoards";
+import useUsers from "../hooks/useUsers";
+import useTaskById from "../hooks/useTaskById";
+import useInitializeForm from "../hooks/useInitializeForm";
 import { priorities, statuses } from "../data";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -19,13 +21,13 @@ import {
 import { addIssue, editIssue } from "../state/issuesSlice";
 import { taskModalDraftStorage } from "../utils/draftStorage";
 import getOptions from "../utils/getOptions";
-import useInitializeForm from "../hooks/useInitializeForm";
 
 export default function TaskModal() {
   const dispatch = useAppDispatch();
   const open = useAppSelector(selectModalOpen);
-  const task = useAppSelector(selectModalTask);
-  const isEdit = Boolean(task);
+  const taskId = useAppSelector(selectModalTaskId);
+  const task = useTaskById(taskId);
+  const isEdit = Boolean(taskId);
   const boardId = useAppSelector(selectModalBoardId);
   const isFromBoard = Boolean(boardId);
 

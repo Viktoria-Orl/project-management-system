@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../state/hooks";
 import { useGetUsersQuery } from "../state/users.rtk";
 import { setUsersFromServer, selectUsers } from "../state/usersSlice";
 
-export function useUsers() {
+export default function useUsers() {
   const dispatch = useAppDispatch();
   const { data: usersFromServer } = useGetUsersQuery();
 

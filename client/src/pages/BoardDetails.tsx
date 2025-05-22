@@ -1,12 +1,12 @@
 import { useParams } from "react-router-dom";
 import { statuses } from "../data";
-import { useBoards } from "../hooks/useBoards";
+import useBoards from "../hooks/useBoards";
+import useTasksFromBoard from "../hooks/useTasksFromBoard";
 import { useAppDispatch } from "../state/hooks";
 import { setOpen } from "../state/modalStateSlice";
 import { Typography, Col, Row } from "antd";
 import TaskCard from "../components/TaskCard";
-import { ITask } from "../types/types";
-import { useTasksFromBoard } from "../hooks/useTasksFromBoard";
+
 //добавить Смену статуса задачи на доске посредством Drag-and-drop
 
 const { Title } = Typography;
@@ -20,17 +20,8 @@ export default function BoardDetailsPage() {
 
   if (!board) return <p>Доска не найдена</p>;
 
-  const handleEdit = (task: ITask) => {
-    // для редактирования задачи передаем task
-    dispatch(
-      setOpen({
-        task: {
-          ...task,
-          boardName: board.name, // добавляем boardName для заполнения поля "Проект"
-          //т.к. задача из issuesSlice/projectTasks приходит без имени доски
-        },
-      }),
-    );
+  const handleEdit = (taskId: number) => {
+    dispatch(setOpen({ taskId })); // для редактирования задачи передаем task
   };
 
   return (
@@ -38,7 +29,6 @@ export default function BoardDetailsPage() {
       <Title>{board.name}</Title>
       <div
         style={{
-          height: "81vh",
           overflowY: "auto",
           overflowX: "hidden",
           paddingRight: 8,

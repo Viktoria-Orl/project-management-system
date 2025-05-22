@@ -4,8 +4,8 @@ import type { TableColumnsType } from "antd";
 import Highlighter from "react-highlight-words";
 import type { ITask } from "../types/types";
 import { statuses, priorities } from "../data";
-import { useTasks } from "../hooks/useTasks";
-import { useBoards } from "../hooks/useBoards";
+import useTasks from "../hooks/useTasks";
+import useBoards from "../hooks/useBoards";
 import { useAppDispatch } from "../state/hooks";
 import { setOpen } from "../state/modalStateSlice";
 
@@ -15,6 +15,7 @@ interface IDataSource extends ITask {
 
 export default function Issues() {
   const [searchText, setSearchText] = useState("");
+
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSearchText(event.target.value);
   }
@@ -23,8 +24,8 @@ export default function Issues() {
   const boards = useBoards();
   const dispatch = useAppDispatch();
 
-  const handleEdit = (task: ITask) => {
-    dispatch(setOpen({ task })); // для редактирования задачи передаем task
+  const handleEdit = (taskId: number) => {
+    dispatch(setOpen({ taskId })); // для редактирования задачи передаем task
   };
 
   //Поиск по названию задачи и исполнителю
@@ -122,7 +123,7 @@ export default function Issues() {
         onRow={(task) => {
           return {
             onClick: () => {
-              handleEdit(task);
+              handleEdit(task.id);
             },
             style: { cursor: "pointer" },
           };
