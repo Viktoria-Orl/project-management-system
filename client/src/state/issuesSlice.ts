@@ -19,6 +19,8 @@ export const issuesSlice = createSlice({
   name: "issues",
   initialState,
   reducers: {
+    // Экшн — это объект, описывающий, что должно произойти.
+    // payload — данные для изменения.
     setIssuesFromServer: (state, action: PayloadAction<ITask[]>) => {
       state.allTasks = action.payload;
     },
@@ -29,17 +31,49 @@ export const issuesSlice = createSlice({
       state.projectTasks[action.payload.boardId] = action.payload.tasks;
     },
     addIssue: (state, action: PayloadAction<ITask>) => {
-      state.allTasks.push(action.payload);
+      const task = action.payload;
+      if (state.allTasks?.length) {
+        state.allTasks.push(task);
+      }
+      if (!state.projectTasks[task.boardId]) {
+        state.projectTasks[task.boardId] = [];
+      }
+      state.projectTasks[task.boardId].push(task);
     },
-    // Экшн — это объект, описывающий, что должно произойти.
-    // payload — данные для изменения.
     editIssue: (state, action: PayloadAction<ITask>) => {
+      const updatedTask = action.payload;
       const index = state.allTasks.findIndex(
-        (issue) => issue.id === action.payload.id,
+        (issue) => issue.id === updatedTask.id,
       );
       if (index !== -1) {
-        state.allTasks[index] = action.payload;
+        state.allTasks[index] = updatedTask;
       }
+      const tasks = state.projectTasks[updatedTask.boardId];
+      if (tasks) {
+        const taskIndex = tasks.findIndex((task) => task.id === updatedTask.id);
+        if (taskIndex !== -1) {
+          tasks[taskIndex] = updatedTask;
+        }
+      }
+    },
+    editIssueStatus: (
+      state,
+      action: PayloadAction<Pick<ITask, "id" | "status"> & { boardId: string }>,
+    ) => {
+      if (state.allTasks?.length) {
+        const index = state.allTasks.findIndex(
+          (issue) => issue.id === action.payload.id,
+        );
+        if (index >= 0) {
+          state.allTasks[index].status = action.payload.status;
+        }
+      }
+
+      state.projectTasks[action.payload.boardId]?.forEach((task) => {
+        if (task.id === action.payload.id) {
+          task.status = action.payload.status;
+        }
+      });
     },
   },
 });
@@ -50,6 +84,7 @@ export const {
   setIssuesByBoardFromServer,
   addIssue,
   editIssue,
+  editIssueStatus,
 } = issuesSlice.actions;
 
 // Селектор: получает список задач из состояния
@@ -59,5 +94,5 @@ export const selectIssueById = (state: RootState, taskId: number) =>
 export const selectIssuesByBoard = (state: RootState, boardId?: string) =>
   boardId ? state.issues.projectTasks[boardId] : [];
 
-// Экспорт редюсера для подключения в store
+// Экспорт редюсеров для подключения в store
 export default issuesSlice.reducer;

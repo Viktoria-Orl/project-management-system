@@ -107,7 +107,7 @@ export default function TaskModal() {
               }),
             );
           })
-          .catch((error) => console.error("Ошибка обновления задачи:", error));
+          .catch((error) => console.log("Ошибка обновления задачи:", error));
       } else {
         createNewTask(dataToSubmit)
           .unwrap()
@@ -147,10 +147,12 @@ export default function TaskModal() {
     }
   };
 
+  //сохранение черновика модального окна
   function handleValuesChange(
     _: Partial<CreateUpdateTask>, // "заглушка" для changedValues - первого аргумента колбэка onValuesChange
     values: Partial<CreateUpdateTask>,
   ) {
+    console.log("Values Changed in modal window");
     if (!isEdit) {
       taskModalDraftStorage.save(values);
     }

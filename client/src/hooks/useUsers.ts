@@ -11,7 +11,8 @@ export default function useUsers() {
     if (usersFromServer) {
       dispatch(setUsersFromServer(usersFromServer.data));
     }
-  }, [usersFromServer, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [usersFromServer]);
 
   const users = useAppSelector(selectUsers);
   return users;

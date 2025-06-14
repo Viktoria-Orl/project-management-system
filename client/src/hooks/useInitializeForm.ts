@@ -7,8 +7,8 @@ interface IProps {
   open: boolean;
   isEdit: boolean;
   isFromBoard: boolean;
-  currentBoardName: string | undefined;
-  task: ITask | undefined;
+  currentBoardName?: string;
+  task?: ITask;
   form: FormInstance;
 }
 
@@ -21,6 +21,8 @@ export default function useInitializeForm({
   currentBoardName,
 }: IProps) {
   useEffect(() => {
+    if (!open) return; // ничего не делать, если модалка закрыта
+    form.resetFields(); // предварительная очистка формы
     const draft = taskModalDraftStorage.load();
     if (isEdit && task) {
       form.setFieldsValue({

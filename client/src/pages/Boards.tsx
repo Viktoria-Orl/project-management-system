@@ -20,12 +20,14 @@ export default function Boards() {
             cursor: "pointer",
             borderRadius: "12px",
             margin: "16px 0",
+            /* borderBottom: "0px", */
           }}
           classNames={{
             body: "my-card",
           }}
           styles={{
             body: { display: "none" },
+            header: { borderBottom: "0px" },
           }}
         ></Card>
       ))}

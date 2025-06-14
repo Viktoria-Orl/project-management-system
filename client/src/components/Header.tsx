@@ -24,12 +24,12 @@ export default function Header() {
   const boardId = isFromBoard ? Number(pathParts[1]) : undefined;
 
   // по клику открывается модальное окно
-  const handleCreateClick = () => {
+  const handleOpen = () => {
     dispatch(setOpen({ boardId })); // если со страницы доски, то передается boardId
   };
 
   const taskModalButton = (
-    <Button type="primary" onClick={handleCreateClick}>
+    <Button type="primary" onClick={handleOpen}>
       Создать задачу
     </Button>
   );

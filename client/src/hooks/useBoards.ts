@@ -11,7 +11,8 @@ export default function useBoards() {
     if (boardsFromServer) {
       dispatch(setBoardsFromServer(boardsFromServer.data));
     }
-  }, [boardsFromServer, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [boardsFromServer]);
 
   const boards = useAppSelector(selectBoards);
   return boards;
