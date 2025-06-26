@@ -7,9 +7,15 @@ jest.mock("../hooks/useBoards", () => ({
   default: () => [
     {
       id: "1",
-      name: "Test name",
-      description: "Test description",
+      name: "Board 1",
+      description: "Board 1 description",
       taskCount: 123,
+    },
+    {
+      id: "2",
+      name: "Board 2",
+      description: "Board 2 description",
+      taskCount: 12,
     },
   ],
 }));
@@ -25,6 +31,7 @@ describe("Tests for Boards component", () => {
         <Boards />
       </BrowserRouter>,
     );
-    expect(screen.getByText("Test name")).toBeInTheDocument();
+    expect(screen.getByText("Board 1")).toBeInTheDocument();
+    expect(screen.getByText("Board 2")).toBeInTheDocument();
   });
 });

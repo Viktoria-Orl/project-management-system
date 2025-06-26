@@ -10,8 +10,5 @@ export default {
     "^.+\\.tsx?$": ["ts-jest", { tsconfig: "tsconfig.app.json" }],
   },
   testEnvironment: "jsdom",
-  testEnvironmentOptions: {
-    customExportConditions: [""],
-  },
   setupFilesAfterEnv: ["<rootDir>/setupTests.ts"],
 };
